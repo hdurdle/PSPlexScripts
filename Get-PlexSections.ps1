@@ -1,20 +1,23 @@
-# Get names of Plex Libraries
-# .\Get-PlexSections.ps1
-#
+#Requires -Version 7.0
+<#
+.SYNOPSIS
+    Lists the libraries (sections) on the Plex server.
 
-# -----------------------------------------------------------------------------------------
-$plexConfig = Get-Content -Path .\Plex.config | ConvertFrom-Json
-$plexServer = $plexConfig.server
-$token = Get-Content -Path Plex.token # Use Get-PlexToken to get this
-# -----------------------------------------------------------------------------------------
+.DESCRIPTION
+    GET /library/sections. Read-only. Returns title, key and type (movie, show, artist)
+    for each library. Server and token come from PlexServer and PlexToken
+    (see .PlexApi.ps1).
 
-$plexUri = "http://$plexServer/library/sections/"
+.EXAMPLE
+    .\Get-PlexSections.ps1
+#>
+[CmdletBinding()]
+param()
 
-$headers = @{}
-$headers.Add("accept", "application/json") | out-null
-$headers.Add("X-Plex-Client-Identifier", "PowerPlex") | Out-Null
-$headers.Add("X-Plex-Product", "PowerPlex") | Out-Null
-$headers.Add("X-Plex-Version", $host.Version.Major) | Out-Null
-$headers.Add("X-Plex-Token", $token) | Out-Null
-$plexJson = Invoke-RestMethod -Uri $plexUri -Headers $headers
-$plexJson.MediaContainer.Directory | Select-Object -Property title, key
+Set-StrictMode -Version Latest
+$ErrorActionPreference = 'Stop'
+
+. "$PSScriptRoot/.PlexApi.ps1"
+
+(Invoke-PlexApi -Path '/library/sections').MediaContainer.Directory |
+    Select-Object -Property title, key, type

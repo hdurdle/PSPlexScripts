@@ -1,3 +1,11 @@
-
+# Local settings and secrets. The token belongs in $env:PlexToken, not a file.
 Plex.token
 Plex.config
+
+# Run artifacts, caches and exports: always data, never commit.
+out/
+cache/
+*.csv
+*.xlsx
+*.json
+*.txt
